@@ -52,29 +52,29 @@ bool AObstacleChecker::CheckAssetValidity()
 	return false;
 }
 
-// º¯¼ö ÃÊ±âÈ­
+// ë³€ìˆ˜ ì´ˆê¸°í™”
 void AObstacleChecker::InitMapSpecification()
 {
 	GetActorBounds(true, Origin, Extent);
 
-	GridWidthSize = FMath::TruncToInt((Extent.X * 2.f) / (float)GridDist) + 0.5f;
-	GridLengthSize = FMath::TruncToInt((Extent.Y * 2.f) / (float)GridDist) + 0.5f;
+	GridWidthSize = FMath::TruncToInt((Extent.X * 2.f) / (float)GridDist) + 0.5f;  // ê·¸ë¦¬ë“œ ì„¸ë¡œ ê°œìˆ˜
+	GridLengthSize = FMath::TruncToInt((Extent.Y * 2.f) / (float)GridDist) + 0.5f; // ê·¸ë¦¬ë“œ ê°€ë¡œ ê°œìˆ˜
 	TotalSize = GridWidthSize * GridLengthSize;
 
-	BiasX = FMath::TruncToInt(((GridWidthSize * GridDist) / 2.f) - (GridDist / 2.f));
+	BiasX = FMath::TruncToInt(((GridWidthSize * GridDist) / 2.f) - (GridDist / 2.f)); // ë³´ì •ê°’
 	BiasY = FMath::TruncToInt(((GridLengthSize * GridDist) / 2.f) - (GridDist / 2.f));
 }
 
-// ¿µ¿ª ³»ÀÇ ¸ğµç ±×¸®µå À§Ä¡ °ª ÀúÀå
+// ì˜ì—­ ë‚´ì˜ ëª¨ë“  ê·¸ë¦¬ë“œ ìœ„ì¹˜ ê°’ ì €ì¥
 void AObstacleChecker::InitFieldLocations()
 {
 	if (CheckMode == ECheckMode::ECM_ObstacleCheck)
 	{
-		FieldLocations.Init(FPos(), TotalSize);
-		FieldHeights.Init(0.f, TotalSize);
-		IsMovableArr.Init(false, TotalSize);
-		ExtraCost.Init(0, TotalSize);
-		BlockedGrids.Reserve(TotalSize);
+		FieldLocations.Init(FPos(), TotalSize); 	// ê·¸ë¦¬ë“œ ìœ„ì¹˜
+		FieldHeights.Init(0.f, TotalSize); 		// ê·¸ë¦¬ë“œ ë†’ì´
+		IsMovableArr.Init(false, TotalSize); 		// ê·¸ë¦¬ë“œì˜ ì¥ì• ë¬¼ ì—¬ë¶€
+		ExtraCost.Init(0, TotalSize); 			// ê° ê·¸ë¦¬ë“œì— ë¶€ì—¬ëœ ê°€ì¤‘ì¹˜
+		BlockedGrids.Reserve(TotalSize); 		// í†µí–‰ ë¶ˆê°€ë¡œ ê°„ì£¼ëœ ê·¸ë¦¬ë“œ
 
 		for (int i = 0; i < GridLengthSize; i++)
 		{
@@ -127,7 +127,7 @@ void AObstacleChecker::Tick(float DeltaTime)
 	}
 }
 
-// ±×¸®µå¸¦ 0.05ÃÊ´ç 200°³¾¿ °Ë»ç
+// ê·¸ë¦¬ë“œë¥¼ 0.05ì´ˆë‹¹ 200ê°œì”© ê²€ì‚¬
 void AObstacleChecker::CheckGridSequentially(float DeltaTime)
 {
 	CumulatedTime += DeltaTime;
@@ -159,7 +159,7 @@ void AObstacleChecker::CheckGridSequentially(float DeltaTime)
 	}
 }
 
-// Flow Field Àü¿ë ±×¸®µå µ¥ÀÌÅÍ »ı¼º
+// Flow Field ì „ìš© ê·¸ë¦¬ë“œ ë°ì´í„° ìƒì„±
 void AObstacleChecker::CheckFlowFieldData()
 {
 	int32 Count = 0;
@@ -193,7 +193,7 @@ void AObstacleChecker::CheckFlowFieldData()
 		else
 		{
 			GetWorld()->LineTraceSingleByChannel(Hit, Loc, Loc2, ECC_HeightCheck);
-			FieldHeights[LastIdx] = Hit.ImpactPoint.Z; // ³ôÀÌ°ª ÀúÀå
+			FieldHeights[LastIdx] = Hit.ImpactPoint.Z; // ë†’ì´ê°’ ì €ì¥
 			Loc.Z = Hit.ImpactPoint.Z;
 			DrawDebugBox(GetWorld(), Loc, FVector(GridDist, GridDist, 1), FColor::Blue, true, -1.f, 0, 2.f);
 		}
@@ -210,7 +210,7 @@ void AObstacleChecker::CheckFlowFieldData()
 	}
 }
 
-// °¢ ±×¸®µåÀÇ Àå¾Ö¹° ¿©ºÎ¿Í ³ôÀÌ °ª Ã¼Å©
+// ê° ê·¸ë¦¬ë“œì˜ ì¥ì• ë¬¼ ì—¬ë¶€ì™€ ë†’ì´ ê°’ ì²´í¬
 void AObstacleChecker::CheckObstacle()
 {
 	int32 Count = 0;
@@ -252,7 +252,7 @@ void AObstacleChecker::CheckObstacle()
 				true
 			);
 			
-			FieldHeights[LastIdx] = Hit.ImpactPoint.Z; // ³ôÀÌ°ª ÀúÀå
+			FieldHeights[LastIdx] = Hit.ImpactPoint.Z; // ë†’ì´ê°’ ì €ì¥
 
 			if (Hit.bBlockingHit)
 			{
@@ -277,7 +277,7 @@ void AObstacleChecker::CheckObstacle()
 	}
 }
 
-// ³ôÀÌ °ª Â÷ÀÌ°¡ ÀÏÁ¤ ¼öÄ¡ ÀÌ»óÀÎ ±×¸®µå¸¦ Àå¾Ö¹° ±×¸®µå·Î ¼³Á¤
+// ë†’ì´ ê°’ ì°¨ì´ê°€ ì¼ì • ìˆ˜ì¹˜ ì´ˆê³¼ì¸ ê·¸ë¦¬ë“œë¥¼ ì¥ì• ë¬¼ ê·¸ë¦¬ë“œë¡œ ì„¤ì •
 void AObstacleChecker::CheckHeightDifference()
 {
 	int32 Count = 0;
@@ -289,17 +289,17 @@ void AObstacleChecker::CheckHeightDifference()
 			for (int8 Idx = 0; Idx < 4; Idx++)
 			{
 				const int32 NextGrid = (CY + Front[Idx].Y) * GridWidthSize + (CX + Front[Idx].X);
-				if (NextGrid < 0 || NextGrid >= TotalSize) continue;
-				if (IsMovableArr[NextGrid] == false) continue;
-				if (FieldHeights[NextGrid] - FieldHeights[LastIdx] <= HeightDifferenceLimit) continue;
-				if (CheckMode == ECheckMode::ECM_ObstacleCheck)
+				if (NextGrid < 0 || NextGrid >= TotalSize) continue; // ì˜ì—­ ë°”ê¹¥ì¼ ê²½ìš°
+				if (IsMovableArr[NextGrid] == false) continue; // ì¥ì• ë¬¼ì´ ìˆëŠ” ê·¸ë¦¬ë“œì¸ ê²½ìš°
+				if (FieldHeights[NextGrid] - FieldHeights[LastIdx] <= HeightDifferenceLimit) continue; // ì¸ì ‘ ê·¸ë¦¬ë“œì™€ì˜ ë†’ì´ ì°¨ì´ê°€ ì¼ì • ìˆ˜ì¹˜ ì´í•˜ì¸ ê²½ìš°
+				if (CheckMode == ECheckMode::ECM_ObstacleCheck) // AStar ë°ì´í„°
 				{
 					BlockedGrids.Add(LastIdx);
 					ExtraCost[LastIdx] = (ObstacleCost - 2) * 100;
 					DrawDebugPoint(GetWorld(), FVector(FieldLocations[LastIdx].X, FieldLocations[LastIdx].Y, FieldHeights[LastIdx] + 15.f), 7.5f, FColor::Cyan, true);
 					break;
 				}
-				else if (CheckMode == ECheckMode::ECM_FlowFieldCheck)
+				else if (CheckMode == ECheckMode::ECM_FlowFieldCheck) // Flow Field ë°ì´í„°
 				{
 					IsMovableArr[LastIdx] = false;
 					const FVector Loc = FVector(Origin.X + (GridDist * (LastIdx % GridWidthSize)) - BiasX, Origin.Y + (GridDist * (LastIdx / GridWidthSize)) - BiasY, FieldHeights[LastIdx] + 15.f);
@@ -338,7 +338,7 @@ void AObstacleChecker::CheckHeightDifference()
 	}
 }
 
-// Àå¾Ö¹° ±×¸®µå ±ÙÃ³ÀÇ ÀÎÀü ±×¸®µå¿¡ °¡ÁßÄ¡ ºÎ¿©
+// ì¥ì• ë¬¼ ê·¸ë¦¬ë“œ ê·¼ì²˜ì˜ ì¸ì „ ê·¸ë¦¬ë“œì— ê°€ì¤‘ì¹˜ ë¶€ì—¬
 void AObstacleChecker::GiveExtraScoreToGrid(float DeltaTime)
 {
 	CumulatedTime += DeltaTime;
@@ -361,7 +361,7 @@ void AObstacleChecker::GiveExtraScoreToGrid(float DeltaTime)
 	}
 }
 
-// BFS ¹æ½ÄÀ¸·Î °¡ÁßÄ¡ ºÎ¿©
+// BFS ë°©ì‹ìœ¼ë¡œ ê°€ì¤‘ì¹˜ ë¶€ì—¬
 void AObstacleChecker::BFS(int32 GridIdx)
 {
 	TArray<int32> NextGrid;
@@ -397,7 +397,7 @@ void AObstacleChecker::BFS(int32 GridIdx)
 	}
 }
 
-// µ¥ÀÌÅÍ ¿¡¼Â »ı¼º ÈÄ µ¥ÀÌÅÍ °ª ÀúÀå
+// ë°ì´í„° ì—ì…‹ ìƒì„± í›„ ë°ì´í„° ê°’ ì €ì¥
 void AObstacleChecker::CreateMapNavDataAsset()
 {
 	if (AssetName.Len() == 0)
