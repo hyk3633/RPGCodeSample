@@ -85,6 +85,7 @@ void ARPGHUD::Tick(float DeltaTime)
 	UpdateCooldownProgress();
 }
 
+// 각 위젯들을 뷰포트에 띄우기
 void ARPGHUD::InitHUD()
 {
 	CastPawnAndBindFunctions();
@@ -134,6 +135,7 @@ void ARPGHUD::CastPawnAndBindFunctions()
 	}
 }
 
+// 캐릭터 리스폰 시 HUD 초기화 후 다시 띄우기
 void ARPGHUD::ReloadHUD()
 {
 	CastPawnAndBindFunctions();
@@ -192,6 +194,7 @@ void ARPGHUD::UpdateCooldownProgress()
 	}
 }
 
+// 스킬 프로그레스 바 퍼센티지 갱신
 void ARPGHUD::SetProgressPercentage(const int8 Index, const float Percentage)
 {
 	ClockProgressMatInstDynamic = UMaterialInstanceDynamic::Create(ClockProgressMatInst, this);
@@ -221,6 +224,7 @@ void ARPGHUD::CooldownProgressSetFull(uint8 Bit)
 
 /** ---------------------- 인벤토리 ---------------------- */
 
+// 인벤토리 슬롯 초기화
 void ARPGHUD::InitInventorySlot()
 {
 	if (GameplayInterface->InventoryWidget == nullptr || ItemSlotClass == nullptr) return;
@@ -265,6 +269,7 @@ void ARPGHUD::InventoryWidgetToggle(const bool bInventoryOn)
 	}
 }
 
+// 코인 획득
 void ARPGHUD::AddCoins(const int32& CoinAmount)
 {
 	if (GameplayInterface->InventoryWidget == nullptr) return;
@@ -272,6 +277,7 @@ void ARPGHUD::AddCoins(const int32& CoinAmount)
 	GameplayInterface->InventoryWidget->AddCoins(CoinAmount);
 }
 
+// 포션 획득
 void ARPGHUD::AddPotion(const int32& UniqueNum, const EItemType ItemType, const int32& PotionCount)
 {
 	ExpandInventoryIfNoSpace();
@@ -291,6 +297,7 @@ void ARPGHUD::AddPotion(const int32& UniqueNum, const EItemType ItemType, const 
 	}
 }
 
+// 장비 획득
 void ARPGHUD::AddEquipment(const int32& UniqueNum, const EItemType ItemType)
 {
 	ExpandInventoryIfNoSpace();
@@ -333,6 +340,7 @@ void ARPGHUD::UpdateItemCount(const int32& UniqueNum, const int32& ItemCount)
 	}
 }
 
+// 아이템 슬롯 비우기
 void ARPGHUD::ClearItemSlot(const int32& UniqueNum)
 {
 	// 슬롯 UI 초기화
@@ -434,6 +442,7 @@ void ARPGHUD::GetPositionUnderCursor(FVector2D& Position)
 	Position.Y = MY - (VY / 2);
 }
 
+// 사용 / 장착 버튼 클릭 이벤트
 void ARPGHUD::OnUseOrEquipButtonClicked()
 {
 	ARPGPlayerController* RPGController = Cast<ARPGPlayerController>(GetOwningPlayerController());
@@ -443,12 +452,14 @@ void ARPGHUD::OnUseOrEquipButtonClicked()
 	
 	bIsItemSlotMenuWidgetOn = false;
 
+	// 선택된 아이템이 포션일 경우 
 	if (SelectedItemUniqueNum < 2)
 	{
 		RPGController->UseItem(SelectedItemUniqueNum);
 	}
-	else
+	else // 선택된 아이템이 장비일 경우
 	{
+		// 장착된 장비 번호와 선택된 장비 번호가 같으면 아이템이 장착된 상태이므로 장착 해제
 		if (SelectedItemUniqueNum == EquippedArmourUniqueNum)
 		{
 			RPGController->DoUnequipItem(EquippedArmourUniqueNum);
@@ -459,7 +470,7 @@ void ARPGHUD::OnUseOrEquipButtonClicked()
 			RPGController->DoUnequipItem(EquippedAccessoriesUniqueNum);
 			UnequipItem(EquippedAccessoriesUniqueNum);
 		}
-		else
+		else // 그렇지 않으면 장비를 장착
 		{
 			URPGInventorySlotWidget* SelectedSlot = (*ItemSlotMap.Find(SelectedItemUniqueNum));
 			const EItemType SelectedItemType = SelectedSlot->GetSavedItemType();
@@ -535,6 +546,7 @@ void ARPGHUD::UnequipItem(const int32& UniqueNum)
 	}
 }
 
+// 버리기 버튼 이벤트
 void ARPGHUD::OnDiscardButtonClicked()
 {
 	ARPGPlayerController* RPGController = Cast<ARPGPlayerController>(GetOwningPlayerController());
@@ -555,6 +567,7 @@ void ARPGHUD::OnDiscardButtonClicked()
 	SelectedItemUniqueNum = -1;
 }
 
+// 슬롯에 커서가 올라가면 스탯 정보창 표시
 void ARPGHUD::OnItemSlotButtonHoveredEvent(int32 UniqueNum)
 {
 	if (UniqueNum != -1)
