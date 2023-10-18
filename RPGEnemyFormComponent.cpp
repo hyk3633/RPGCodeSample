@@ -52,6 +52,7 @@ void URPGEnemyFormComponent::CreateProjectilePooler()
 	ProjectilePooler->CreatePool(EnemyAssets.ProjectileClass, 20, EnemyAssets.ProjectileType);
 }
 
+// 에너미 생성 및 반환
 ARPGBaseEnemyCharacter* URPGEnemyFormComponent::CreateNewEnemy(const FVector& WaitingLocation)
 {
 	ARPGBaseEnemyCharacter* NewEnemy = nullptr;
@@ -79,6 +80,7 @@ ARPGBaseEnemyCharacter* URPGEnemyFormComponent::CreateNewEnemy(const FVector& Wa
 	else return nullptr;
 }
 
+// 에너미 정보 초기화
 void URPGEnemyFormComponent::InitEnemy(ARPGBaseEnemyCharacter* SpawnedEnemy)
 {
 	SpawnedEnemy->EnemyForm = this;
@@ -92,6 +94,8 @@ void URPGEnemyFormComponent::InitEnemy(ARPGBaseEnemyCharacter* SpawnedEnemy)
 	SpawnedEnemy->EnemyType = EnemyType;
 	SpawnedEnemy->AttackType = EnemyAssets.AttackType;
 }
+
+/** 공격 함수 */
 
 bool URPGEnemyFormComponent::MeleeAttack(ARPGBaseEnemyCharacter* Attacker, FVector& ImpactPoint)
 {
@@ -124,26 +128,10 @@ void URPGEnemyFormComponent::GetSocketLocationAndSpawn(ARPGBaseEnemyCharacter* A
 	if (!IsValid(HomingTarget)) return;
 
 	FRotator FireRotation = (HomingTarget->GetActorLocation() - TraceStart).Rotation();
-	//FireRotation.Pitch = 0.f;
 
 	SpawnProjectile(Attacker, TraceStart, FireRotation, HomingTarget);
 
 	return;
-
-	/*if (IsValid(HomingTarget))
-	{
-		TraceEnd += (HomingTarget->GetActorLocation() - TraceStart);
-	}
-
-	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_EnemyAttack);
-	if (HitResult.bBlockingHit)
-	{
-		FRotator FireRotation = (HitResult.ImpactPoint - TraceStart).Rotation();
-		FireRotation.Pitch = 0.f;
-
-		SpawnProjectile(Attacker, TraceStart, FireRotation, HomingTarget);
-	}*/
 }
 
 void URPGEnemyFormComponent::SpawnProjectile(ARPGBaseEnemyCharacter* Attacker, const FVector& SpawnLocation, const FRotator& SpawnRotation, APawn* HomingTarget)
