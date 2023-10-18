@@ -260,14 +260,16 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 }
 
+// ê³µê²© ëŒ€ìƒìœ¼ë¡œ í–¥í•˜ëŠ” í”Œë¡œìš° ë²¡í„°ë¥¼ ë°˜í™˜
 FVector* AEnemySpawner::GetFlowVector(ACharacter* TargetCharacter, ACharacter* EnemyCharacter)
 {
-	const int32 Idx = GetConvertCurrentLocationToIndex(EnemyCharacter->GetActorLocation());
-	FFlowVector* FlowVector = TargetsFlowVectors.Find(TargetCharacter);
-	if (FlowVector) return &FlowVector->GridFlows[Idx];
+	const int32 Idx = GetConvertCurrentLocationToIndex(EnemyCharacter->GetActorLocation()); // ì—ë„ˆë¯¸ ìœ„ì¹˜ë¥¼ ì¸ë±ìŠ¤ë¡œ ë³€í™˜
+	FFlowVector* FlowVector = TargetsFlowVectors.Find(TargetCharacter); // TMapì—ì„œ ê³µê²© ëŒ€ìƒì˜ í”Œë¡œìš° ë²¡í„° ë°°ì—´ì„ ê°€ì ¸ì˜´
+	if (FlowVector) return &FlowVector->GridFlows[Idx]; // ì—ë„ˆë¯¸ì˜ í˜„ìž¬ ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” Flow ë²¡í„°ë¥¼ ë°˜í™˜
 	else return nullptr;
 }
 
+// í˜„ìž¬ ìœ„ì¹˜ë¥¼ í–‰ê³¼ ì—´ ì¸ë±ìŠ¤ë¡œ ë³€í™˜
 FPos AEnemySpawner::LocationToPos(const FVector& Location)
 {
 	const int32 DY = FMath::Floor(((Location.Y - OriginLocation.Y + BiasY) / GridDist) + 0.5f);
@@ -276,12 +278,14 @@ FPos AEnemySpawner::LocationToPos(const FVector& Location)
 	return FPos(DY, DX);
 }
 
+// í˜„ìž¬ ìœ„ì¹˜ ë²¡í„°ë¥¼ ë°°ì—´ ì¸ë±ìŠ¤ë¡œ ë³€í™˜
 int32 AEnemySpawner::GetConvertCurrentLocationToIndex(const FVector& Location)
 {
 	FPos Pos = LocationToPos(Location);
 	return (Pos.Y * GridWidth + Pos.X);
 }
 
+// í”Œë ˆì´ì–´ë¥¼ ëª©ì ì§€ë¡œ í•˜ëŠ” í”Œë¡œìš° ë²¡í„° ê³„ì‚°
 void AEnemySpawner::CalculateFlowVector(ACharacter* TargetCharacter)
 {
 	//double start = FPlatformTime::Seconds();
@@ -292,7 +296,6 @@ void AEnemySpawner::CalculateFlowVector(ACharacter* TargetCharacter)
 	const int32 DestIdx = GetConvertCurrentLocationToIndex(TargetCharacter->GetActorLocation());
 	if (DestIdx >= TotalSize) return;
 
-	// ´Ù¸¥ ÇÔ¼ö Ã£±â
 	FVArr->Score.Init(-1, TotalSize);
 
 	int32* DistScore = FVArr->Score.GetData();
@@ -304,7 +307,7 @@ void AEnemySpawner::CalculateFlowVector(ACharacter* TargetCharacter)
 	TQueue<FPos> Next;
 	Next.Enqueue(FPos(DestIdx / GridWidth, DestIdx % GridWidth));
 
-	// ±×¸®µå¿¡ ¸ñÀûÁö·Î ºÎÅÍ Áõ°¡ÇÏ´Â Á¡¼ö ºÎ¿©
+	// ê·¸ë¦¬ë“œì— ëª©ì ì§€ë¡œ ë¶€í„° ì¦ê°€í•˜ëŠ” ì ìˆ˜ ë¶€ì—¬
 	while (!Next.IsEmpty())
 	{
 		FPos CPos;
@@ -321,8 +324,8 @@ void AEnemySpawner::CalculateFlowVector(ACharacter* TargetCharacter)
 			if (NextPos.Y >= TopLeftPos.Y && NextPos.Y <= BottomRightPos.Y &&
 				NextPos.X >= BottomRightPos.X && NextPos.X <= TopLeftPos.X)
 			{
-				if (*(DistScore + NextIdx) != -1) continue;
-				if (IsMovableArr[NextIdx] == false) continue;
+				if (*(DistScore + NextIdx) != -1) continue; // ì´ë¯¸ ê³„ì‚°í•œ ê·¸ë¦¬ë“œì¼ ê²½ìš° 
+				if (IsMovableArr[NextIdx] == false) continue; // í†µí–‰ ë¶ˆê°€ ê·¸ë¦¬ë“œì¼ ê²½ìš°
 				const int32 HeightScore = FMath::Abs(FMath::TruncToInt(FieldHeights[NextIdx] - FieldHeights[DestIdx]));
 
 				*(DistScore + NextIdx) = *(DistScore + (CPos.Y * GridWidth + CPos.X)) + 1 + HeightScore;
@@ -331,7 +334,7 @@ void AEnemySpawner::CalculateFlowVector(ACharacter* TargetCharacter)
 		}
 	}
 
-	// °¢ ±×¸®µåÀÇ ÀÎÁ¢ ±×¸®µå Áß °¡Àå Á¡¼ö°¡ ÀÛÀº ±×¸®µå·Î ÇâÇÏ´Â ¹æÇâ º¤ÅÍ °è»ê
+	// ê° ê·¸ë¦¬ë“œì˜ ì¸ì ‘ ê·¸ë¦¬ë“œ ì¤‘ ê°€ìž¥ ì ìˆ˜ê°€ ìž‘ì€ ê·¸ë¦¬ë“œë¡œ í–¥í•˜ëŠ” ë°©í–¥ ë²¡í„° ê³„ì‚°
 	for (int32 CY = 0; CY < GridLength; CY++)
 	{
 		for (int32 CX = 0; CX < GridWidth; CX++)
@@ -354,9 +357,9 @@ void AEnemySpawner::CalculateFlowVector(ACharacter* TargetCharacter)
 				}
 			}
 
-			// ÇöÀç ±×¸®µå
+			// í˜„ìž¬ ê·¸ë¦¬ë“œ
 			FVector Loc = FVector(OriginLocation.X + (GridDist * CX) - BiasX, OriginLocation.Y + (GridDist * CY) - BiasY, 0);
-			// ÀÎÁ¢ÇÑ ±×¸®µå Áß °¡Àå °ªÀÌ ÀÛÀº ±×¸®µå
+			// ì¸ì ‘í•œ ê·¸ë¦¬ë“œ ì¤‘ ê°€ìž¥ ê°’ì´ ìž‘ì€ ê·¸ë¦¬ë“œ
 			FVector Loc2 = FVector(OriginLocation.X + (GridDist * (CX + Front[Idx].X)) - BiasX, OriginLocation.Y + (GridDist * (CY + Front[Idx].Y)) - BiasY, 0);
 			*(FlowVector + (CY * GridWidth + CX)) = (Loc2 - Loc).GetSafeNormal();
 
