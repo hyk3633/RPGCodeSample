@@ -80,6 +80,11 @@ void UWorldGridManagerComponent::InitWorldGrid()
 	}
 }
 
+/**
+	@param Start 		: ì‹œì‘ ìœ„ì¹˜ ë²¡í„°
+ 	@param Dest 		: ëª©ì ì§€ ìœ„ì¹˜ ë²¡í„°
+  	@param PathToDest 	: ê²½ë¡œë¥¼ ë‹´ì„ ë°°ì—´
+*/
 void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVector& Dest, TArray<FPos>& PathToDest)
 {
 	double start = FPlatformTime::Seconds();
@@ -98,7 +103,7 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 	const int32 SY = VectorToCoordinatesY(Start.Y);
 	const int32 SX = VectorToCoordinatesX(Start.X);
 
-	// ¸ñÀûÁö°¡ ÇöÀç À§Ä¡ º¸´Ù ³ôÀº °÷ ÀÎÁö? (³ôÀº °÷ÀÌ¸é true)
+	// ëª©ì ì§€ê°€ í˜„ì¬ ìœ„ì¹˜ ë³´ë‹¤ ë†’ì€ ê³³ ì¸ì§€? (ë†’ì€ ê³³ì´ë©´ true)
 	const bool bIsGoingUp = FieldHeights[DY * GridWidthSize + DX] - FieldHeights[SY * GridWidthSize + SX] > 0.f ? true : false;
 
 	FPos StartPos(SY, SX);
@@ -148,7 +153,7 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 			if (Visited[NextIdx])
 				continue;
 
-			// ÇöÀç ±×¸®µå¿Í ´ÙÀ½ ±×¸®µåÀÇ ³ôÀÌ Â÷¸¦ °¡ÁßÄ¡·Î ºÎ¿©
+			// í˜„ì¬ ê·¸ë¦¬ë“œì™€ ë‹¤ìŒ ê·¸ë¦¬ë“œì˜ ë†’ì´ ì°¨ë¥¼ ê°€ì¤‘ì¹˜ë¡œ ë¶€ì—¬
 			const int32 HeightCost = FMath::TruncToInt(FieldHeights[NodeIdx] - FieldHeights[NextIdx]) * (bIsGoingUp ? 10 : -10);
 			const int32 G = Node.G + Cost[Dir] + ObstacleExtraCost[NextIdx] + HeightCost;
 
@@ -180,7 +185,7 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 	double end = FPlatformTime::Seconds();
 	//PLOG(TEXT("time : %f"), end - start);
 
-	// °æ·Î µğ¹ö±×
+	// ê²½ë¡œ ë””ë²„ê·¸
 	/*for (int32 i = 0; i < PathToDest.Num(); i++)
 	{
 		int32 Y = VectorToCoordinatesY(PathToDest[i].Y);
@@ -189,6 +194,12 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 	}*/
 }
 
+/**
+	@param Start 		: ì‹œì‘ ìœ„ì¹˜ ë²¡í„°
+ 	@param Dest 		: ëª©ì ì§€ ìœ„ì¹˜ ë²¡í„°
+  	@param PathToDest 	: ê²½ë¡œë¥¼ ë‹´ì„ ë°°ì—´
+   	@param GridIndexArr 	: ì—ë„ˆë¯¸ ê²½ë¡œì— ê°€ì¤‘ì¹˜ë¥¼ ì¶”ê°€í•˜ê¸° ìœ„í•´ ê²½ë¡œ ê·¸ë¦¬ë“œì˜ ì¸ë±ìŠ¤ë¥¼ ì €ì¥í•  ë°°ì—´
+*/
 void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVector& Dest, TArray<FPos>& PathToDest, TArray<int32>& GridIndexArr)
 {
 	double start = FPlatformTime::Seconds();
@@ -208,7 +219,7 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 	const int32 SY = VectorToCoordinatesY(Start.Y);
 	const int32 SX = VectorToCoordinatesX(Start.X);
 
-	// ¸ñÀûÁö°¡ ÇöÀç À§Ä¡ º¸´Ù ³ôÀº °÷ ÀÎÁö? (³ôÀº °÷ÀÌ¸é true)
+	// ëª©ì ì§€ê°€ í˜„ì¬ ìœ„ì¹˜ ë³´ë‹¤ ë†’ì€ ê³³ ì¸ì§€? (ë†’ì€ ê³³ì´ë©´ true)
 	const bool bIsGoingUp = FieldHeights[DY * GridWidthSize + DX] - FieldHeights[SY * GridWidthSize + SX] > 0.f ? true : false;
 
 	FPos StartPos(SY, SX);
@@ -260,7 +271,7 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 			if (Visited[NextIdx])
 				continue;
 
-			// ÇöÀç ±×¸®µå¿Í ´ÙÀ½ ±×¸®µåÀÇ ³ôÀÌ Â÷¸¦ °¡ÁßÄ¡·Î ºÎ¿©
+			// í˜„ì¬ ê·¸ë¦¬ë“œì™€ ë‹¤ìŒ ê·¸ë¦¬ë“œì˜ ë†’ì´ ì°¨ë¥¼ ê°€ì¤‘ì¹˜ë¡œ ë¶€ì—¬
 			const int32 HeightCost = FMath::TruncToInt(FieldHeights[NodeIdx] - FieldHeights[NextIdx]) * (bIsGoingUp ? 100.f : -100.f);
 			const int32 G = Node.G + Cost[Dir] + ObstacleExtraCost[NextIdx] + EnemiesPathCost[NextIdx] + HeightCost;
 
@@ -272,7 +283,7 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 			HeapArr.HeapPush(FAStarNode{ G + H, G, NextPos });
 			Parent.Add(NextPos, Node.Pos);
 
-			// ¸ñÀûÁö¿¡ µµ´Ş ºÒ°¡´ÉÇÑ °æ¿ì¸¦ ´ëºñÇØ ¸ñÀûÁö¿¡ °¡Àå °¡±î¿î ±×¸®µå¸¦ ÀúÀåÇØµÒ
+			// ëª©ì ì§€ì— ë„ë‹¬ ë¶ˆê°€ëŠ¥í•œ ê²½ìš°ë¥¼ ëŒ€ë¹„í•´ ëª©ì ì§€ì— ê°€ì¥ ê°€ê¹Œìš´ ê·¸ë¦¬ë“œë¥¼ ì €ì¥í•´ë‘ 
 			if (DestPos.GetDistance(NextPos) < MinDest)
 			{
 				MinDest = DestPos.GetDistance(NextPos);
@@ -298,7 +309,7 @@ void UWorldGridManagerComponent::GetAStarPath(const FVector& Start, const FVecto
 	double end = FPlatformTime::Seconds();
 	//PLOG(TEXT("time : %f"), end - start);
 
-	// °æ·Î µğ¹ö±×
+	// ê²½ë¡œ ë””ë²„ê·¸
 	/*for (int32 i = 0; i < PathToDest.Num(); i++)
 	{
 		int32 Y = VectorToCoordinatesY(PathToDest[i].Y);
@@ -344,8 +355,8 @@ bool UWorldGridManagerComponent::CanGo(const FPos& _Pos)
 	return false;
 }
 
-// Ä³¸¯ÅÍÀÇ ÇöÀç ±×¸®µå¿Í ÀÌÀü ±×¸®µå ³ëµå¿Í ±× ÁÖÀ§ 8Ä­ÀÇ ÅëÇà °¡´É ¿©ºÎ ¼³Á¤ (Ä³¸¯ÅÍ ³¢¸® Ãæµ¹ ¹æÁö¸¦ À§ÇØ)
-// true¸é °¡ÁßÄ¡ °¨¼Ò, false¸é °¡ÁßÄ¡ Áõ°¡
+// ìºë¦­í„°ì˜ í˜„ì¬ ê·¸ë¦¬ë“œì™€ ì´ì „ ê·¸ë¦¬ë“œ ë…¸ë“œì™€ ê·¸ ì£¼ìœ„ 8ì¹¸ì˜ í†µí–‰ ê°€ëŠ¥ ì—¬ë¶€ ì„¤ì • (ìºë¦­í„° ë¼ë¦¬ ì¶©ëŒ ë°©ì§€ë¥¼ ìœ„í•´)
+// trueë©´ ê°€ì¤‘ì¹˜ ê°ì†Œ, falseë©´ ê°€ì¤‘ì¹˜ ì¦ê°€
 void UWorldGridManagerComponent::SetGridPassability(const FPos& _Pos, const bool IsPassable)
 {
 	const int32 Y = VectorToCoordinatesY(_Pos.Y);
